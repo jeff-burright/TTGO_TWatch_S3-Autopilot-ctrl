@@ -6,9 +6,9 @@
 <h2 align = "left">⭐ News </h2>
 **Notes on this fork:** This version of the T-Watch-S3 Watch was built to control an ESP32-based sailboat autopilot found in my other repository. It also includes a fully-animated rendition of the Radii watch face. This is still a work in progress, and I plan to add other app functionality and tweak power settings, but it works as-is now. The watch control of the pilot occurs through ESP-NOW. 
 
-[!](https://github.com/jeff-burright/TTGO_TWatch_S3-Autopilot-ctrl/blob/d926ce9daebf975ce4158e6845344506e327dfd0/images/PXL_20231014_154455143.jpg)
+![jeff-burright/TTGO_TWatch_S3-Autopilot-ctrl](https://github.com/jeff-burright/TTGO_TWatch_S3-Autopilot-ctrl/blob/d926ce9daebf975ce4158e6845344506e327dfd0/images/PXL_20231014_154455143.jpg)
 
-[!] (https://github.com/jeff-burright/TTGO_TWatch_S3-Autopilot-ctrl/blob/8ae27cb36f04deaf55b211cd4f18f2ac8784e513/images/PXL_20231014_154416834.jpg)
+![jeff-burright/TTGO_TWatch_S3-Autopilot-ctrl](https://github.com/jeff-burright/TTGO_TWatch_S3-Autopilot-ctrl/blob/8ae27cb36f04deaf55b211cd4f18f2ac8784e513/images/PXL_20231014_154416834.jpg)
 
 1. **T-Watch-S3** version is [here](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/tree/t-watch-s3)
 2. In order to be compatible with multiple versions of T-Watch, all examples include a `config.h` file. For the first use, you need to define the **T-Watch** model you use in the `config.h` file
