@@ -659,6 +659,10 @@ void lowPowerEnergyHandler()
         esp_light_sleep_start();
     } else {
 
+//experiment
+//esp_wifi_stop();
+WiFi.mode(WIFI_OFF);
+
         setCpuFrequencyMhz(10);
         // setCpuFrequencyMhz(80);
         while (!pmuIrq && !sportsIrq && !watch.getTouched()) {
@@ -668,7 +672,8 @@ void lowPowerEnergyHandler()
             // esp_light_sleep_start();
         }
 
-        setCpuFrequencyMhz(240);
+        //setCpuFrequencyMhz(240);  
+                setCpuFrequencyMhz(80); //experiment
     }
 
     // Clear Interrupts in Loop
@@ -691,6 +696,10 @@ void lowPowerEnergyHandler()
     lv_task_handler();
 
     watch.incrementalBrightness(brightnessLevel);
+    
+    //experiment
+    WiFi.mode(WIFI_STA);
+
 }
 
 void loop()
@@ -797,6 +806,8 @@ void factory_ui()
    
    //experiment
     lv_obj_set_size(t2, 240, 240);
+    lv_obj_set_scrollbar_mode(t2, LV_SCROLLBAR_MODE_OFF);  //experimental for scrolling off
+    lv_obj_clear_flag(t2, LV_OBJ_FLAG_SCROLLABLE);
    
     lv_obj_t *t2_1 = lv_tileview_add_tile(tileview, 1, 1, LV_DIR_TOP | LV_DIR_BOTTOM);
     lv_obj_t *t2_2 = lv_tileview_add_tile(tileview, 1, 2, LV_DIR_TOP | LV_DIR_BOTTOM);
@@ -3042,9 +3053,6 @@ autopilot_main_update_label();
 // ESP-NOW Wifi send-receive handler
 static void autopilot_wifi_event(){
 
-//esp_wifi_start();
-//WiFi.mode(WIFI_STA);
-//delay(200);
            esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &APCommand, sizeof(APCommand));
              //esp_err_t result = esp_now_send(broadcastAddress, reinterpret_cast<uint8_t*>(&APCommand), sizeof(APCommand));
              if (result == ESP_OK) {
@@ -3077,10 +3085,7 @@ static void autopilot_wifi_event(){
 
 void callautopilot()
 {
-//esp_wifi_start();
-//espnowinit();
 
-//WiFi.mode(WIFI_STA);
 
  // send initial ESP-NOW handshake
        // requestHTS = 1;
@@ -3161,20 +3166,14 @@ else {
 lv_label_set_text(ui_Togglelabel, "OFF");}
 
 
-       // lv_label_set_text_fmt( ui_CTSfield, "%d", incomingHTS );
-          // lv_label_set_text_fmt( ui_CTSlabel, "%d", incomingHeading );
-
-     // lv_label_set_text_fmt(ui_Togglelabel, "%d", APState);  // Jeff need to fix this
-
-
 }
 
 
 //void ui_APFace_screen_init(lv_obj_t *parent)
 void autopilot(lv_obj_t *parent)
 {
-    //WiFi.mode(WIFI_OFF);
-
+//experiment
+WiFi.mode(WIFI_STA);
 
 lv_disp_t *dispp = lv_disp_get_default();
 lv_theme_t *theme = lv_theme_default_init(dispp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED), false, LV_FONT_DEFAULT);
@@ -3391,7 +3390,7 @@ lv_obj_set_width( ui_connect, 25);
 lv_obj_set_height( ui_connect, 50);
 //lv_obj_set_x( ui_connect, 75 );
 //lv_obj_set_y( ui_connect, 94 );
-lv_obj_set_align( ui_connect, LV_ALIGN_TOP_MID );
+lv_obj_set_align( ui_connect, LV_ALIGN_BOTTOM_MID );
 //lv_obj_add_flag( ui_up10, LV_OBJ_FLAG_SCROLL_ON_FOCUS );   /// Flags
 lv_obj_clear_flag( ui_up10, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
 lv_obj_set_style_bg_color(ui_connect, lv_color_hex(0x383838), LV_PART_MAIN | LV_STATE_DEFAULT );
@@ -3412,7 +3411,6 @@ lv_obj_add_event_cb(ui_up10, ui_event_up10, LV_EVENT_CLICKED, NULL);
 lv_obj_add_event_cb(ui_connect, ui_event_connect, LV_EVENT_CLICKED, NULL);
 
 
-    //lv_obj_add_event_cb(ir_btn, lv_ir_sender_cb, LV_EVENT_CLICKED, NULL);
 }
 
 //----------- AUTOPILOT UI EVENTS  ----------------//
