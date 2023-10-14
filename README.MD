@@ -6,9 +6,9 @@
 <h2 align = "left">⭐ News </h2>
 **Notes on this fork:** This version of the T-Watch-S3 Watch was built to control an ESP32-based sailboat autopilot found in my other repository. It also includes a fully-animated rendition of the Radii watch face. This is still a work in progress, and I plan to add other app functionality and tweak power settings, but it works as-is now. The watch control of the pilot occurs through ESP-NOW. 
 
-[photo of Radii watch face] (images/PXL_20231014_154416834.jpg)
+[!](.images/PXL_20231014_154416834.jpg)
 
-[photo of autopilot control face] (images/PXL_20231014_154455143.jpg)
+[!] (.images/PXL_20231014_154455143.jpg)
 
 1. **T-Watch-S3** version is [here](https://github.com/Xinyuan-LilyGO/TTGO_TWatch_Library/tree/t-watch-s3)
 2. In order to be compatible with multiple versions of T-Watch, all examples include a `config.h` file. For the first use, you need to define the **T-Watch** model you use in the `config.h` file
