@@ -4,7 +4,8 @@
 
 
 <h2 align = "left">⭐ News </h2>
-**Notes on this fork:** This version of the T-Watch-S3 Watch was built to control an ESP32-based sailboat autopilot found in my other repository. It also includes a fully-animated rendition of the Radii watch face. This is still a work in progress, and I plan to add other app functionality and tweak power settings, but it works as-is now. The watch control of the pilot occurs through ESP-NOW. 
+**Notes on this fork:** This version of the T-Watch-S3 Watch was built to control an ESP32-based sailboat autopilot found in my other repository. It also includes a fully-animated rendition of the Radii watch face. This is still a work in progress, and I plan to add other app functionality and tweak wifi sleep settings, but it works as-is now. The watch control of the pilot occurs through ESP-NOW. The watch sends simple numerical commands when a button is pressed, and the pilot sends back the new course heading to the watch when a command is received. 
+
 
 ![jeff-burright/TTGO_TWatch_S3-Autopilot-ctrl](https://github.com/jeff-burright/TTGO_TWatch_S3-Autopilot-ctrl/blob/d926ce9daebf975ce4158e6845344506e327dfd0/images/PXL_20231014_154455143.jpg)
 
