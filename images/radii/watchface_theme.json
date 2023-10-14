@@ -1,0 +1,123 @@
+{
+  "api_level": 2,
+  "dial": {
+    "enable": true,
+    "x_offset": 0,
+    "y_offset": 0
+  },
+  "hour": {
+    "enable": false,
+    "x_offset": 0,
+    "y_offset": 0
+  },
+  "min": {
+    "enable": false,
+    "x_offset": 0,
+    "y_offset": 0
+  },
+  "sec": {
+    "enable": true,
+    "x_offset": 0,
+    "y_offset": 0
+  },
+  "hour_shadow": {
+    "enable": false,
+    "x_offset": 0,
+    "y_offset": 0
+  },
+  "min_shadow": {
+    "enable": false,
+    "x_offset": 0,
+    "y_offset": 0
+  },
+  "sec_shadow": {
+    "enable": false,
+    "x_offset": 0,
+    "y_offset": 0
+  },
+  "label": [
+    {
+      "enable": true,
+      "type": "date",
+      "label": "%H",
+      "font_color": "#FFFFFF",
+      "align": "center",
+      "font_size": 48,
+      "x_offset": 55,
+      "y_offset": 93,
+      "x_size": 128,
+      "y_size": 50
+    },
+    {
+      "enable": true,
+      "type": "date",
+      "label": "%M",
+      "font": "Montserrat",
+      "font_color": "#000000",
+      "align": "center",
+      "font_size": 16,
+      "x_offset": 122,
+      "y_offset": 95,
+      "x_size": 130,
+      "y_size": 50
+    },
+    {
+      "enable": true,
+      "type": "date",
+      "label": "%a",
+      "font": "Montserrat",
+      "font_color": "#000000",
+      "font_size": 16,
+      "align": "left",
+      "x_offset": 6,
+      "y_offset": 100,
+      "x_size": 40,
+      "y_size": 40
+    },
+    {
+      "enable": true,
+      "type": "date",
+      "label": "%d",
+      "font": "Montserrat",
+      "font_color": "#FFFFFF",
+      "font_size": 22,
+      "align": "center",
+      "x_offset": 25,
+      "y_offset": 100,
+      "x_size": 40,
+      "y_size": 40
+    }
+  ],
+  "image": [
+    {
+      "enable": true,
+      "type": "battery_percent",
+      "file": "battery.png",
+      "hide_interval": 0,
+      "rotation_range": 90,
+      "rotation_start": 0,
+      "rotation_x_origin": 120,
+      "rotation_y_origin": 120,
+      "x_offset": 0,
+      "y_offset": 0,
+      "x_size": 240,
+      "y_size": 240
+    },
+    {
+      "enable": true,
+      "type": "image",
+      "file": "battery2.png",
+      "hide_interval": 0,
+      "rotation_range": 0,
+      "rotation_start": 0,
+      "rotation_range": 0,
+      "rotation_start": 0,
+      "rotation_x_origin": 120,
+      "rotation_y_origin": 120,
+      "x_offset": 0,
+      "y_offset": 0,
+      "x_size": 240,
+      "y_size": 240
+    }
+  ]
+}
