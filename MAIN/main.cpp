@@ -73,7 +73,7 @@ extern const uint8_t boot_music[4365];
 #define VAD_FRAME_LENGTH_MS                     30
 #define VAD_BUFFER_LENGTH                       (VAD_FRAME_LENGTH_MS * MIC_I2S_SAMPLE_RATE / 1000)
 
-//-----AUTOPILOT PARAMETERS----------//
+
 
 // Set your new MAC Address for THIS DEVICE
 //uint8_t newMACAddress[] = {0x32, 0xAE, 0xA4, 0x07, 0x0D, 0x64};
@@ -82,7 +82,6 @@ extern const uint8_t boot_music[4365];
 
 //BRUTE FORCE MAC ADDRESS TEST
 //uint8_t broadcastAddress[] = {0x32, 0xAE, 0xA4, 0x07, 0x0D, 0x66};
-
 //uint8_t peerAddress[] = {0xC0, 0x49, 0xEF, 0x65, 0x2D, 0xE4};
 uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
@@ -95,8 +94,6 @@ float APState;
 
 // Define command payload to be sent to the autopilot 
 uint8_t APbutton; 
-//float incomingval.heading;
-//float incomingval.hts;
 
   //  char heading[10];
 char heading_to_steer[10];
@@ -278,10 +275,9 @@ void analogclock3(lv_obj_t *parent);
 void radiiclock(lv_obj_t *parent);
 void lcarsclock(lv_obj_t *parent);
 void lcdclock(lv_obj_t *parent);
-
-
 void digitalClock(lv_obj_t *parent);
 void digitalClock2(lv_obj_t *parent);
+
 
 void devicesInformation(lv_obj_t *parent);
 void wifiscan(lv_obj_t *parent);
@@ -291,11 +287,13 @@ void irRemoteVeiw(lv_obj_t *parent);
 void datetimeVeiw(lv_obj_t *parent);
 void lilygo_qrcode(lv_obj_t *parent);
 
+//ESP-NOW Elements
 void espnowinit();
-
 void OnDataSent(const uint8_t *, esp_now_send_status_t);
 void OnDataRecv(const uint8_t *, const uint8_t *, int);
 
+
+//Autopilot elements
 void autopilot(lv_obj_t *parent);
 void callautopilot();
 void autopilot_main_update_label();
@@ -422,7 +420,7 @@ void setup()
       // ESP32 Board add-on after version > 1.0.5
   //esp_wifi_set_mac(WIFI_IF_STA, &newMACAddress[0]);
     
-         WiFi.mode(WIFI_STA);
+   //      WiFi.mode(WIFI_STA);
 
      //Stop wifi
    // WiFi.mode(WIFI_OFF);
@@ -698,7 +696,8 @@ WiFi.mode(WIFI_OFF);
     watch.incrementalBrightness(brightnessLevel);
     
     //experiment
-    WiFi.mode(WIFI_STA);
+  // if (pageId ==7) 
+  WiFi.mode(WIFI_STA);
 
 }
 
@@ -941,14 +940,6 @@ static void draw_part_event_cb(lv_event_t *e)
     }
 }
 
-/*
-void autopilot(lv_obj_t *parent)
-{
-
-    callautopilot();
-
-    };
-*/
 
 void productPinmap(lv_obj_t *parent)
 {
@@ -1219,7 +1210,7 @@ lv_img_set_angle(
         int percent = watch.getBatteryPercent();
         lv_label_set_text_fmt(battery_percent2, "%d", percent == -1 ? 0 : percent);
         lv_img_set_angle(
-            watch_radii_batt_img, ((100-percent) *10) );   // removed * 100 after (percent)
+            watch_radii_batt_img, ((100-percent) *10)-50 );   // removed * 100 after (percent)
 
 
 //second animation
@@ -2985,6 +2976,9 @@ void espnowinit()
 {
      WiFi.mode(WIFI_STA);
 
+     esp_wifi_set_protocol(WIFI_IF_STA, WIFI_PROTOCOL_LR);
+       esp_wifi_set_ps(WIFI_PS_NONE);
+
 // Automatically connect to the autopilot on the boat (do I need this? maybe not if it's mac address based)
 //const char *ssid = "PlotDevice";
 //const char *password = "thereyouare";
@@ -3086,9 +3080,7 @@ static void autopilot_wifi_event(){
 void callautopilot()
 {
 
-
  // send initial ESP-NOW handshake
-       // requestHTS = 1;
         APbutton = 6;
         APCommand.doit = APbutton;
 
@@ -3100,8 +3092,6 @@ esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &APCommand, sizeof
                Serial.println("Error sending callautopilot");
              }
 
- //esp_err_t result = esp_now_send(broadcastAddress, reinterpret_cast<uint8_t*>(&APCommand), sizeof(APCommand));
-//requestHTS = 0;
 autopilot_main_update_label();
 
 }
@@ -3154,8 +3144,7 @@ void autopilot_main_update_label() //displays updated info in the watch face. Ne
 {
   //  snprintf(heading, sizeof( heading ), "%.1f°", incomingHeading);
     snprintf(heading_to_steer, sizeof( heading_to_steer ), "%0.1f°", incomingHTS);
-    //snprintf(incAPstate, sizeof (incAPstate), "%s", APState);
-      
+    //snprintf(incAPstate, sizeof (incAPstate), "%s", APState);     
      // lv_label_set_text_fmt(ui_Togglelabel, "%s", incAPstate);
       lv_label_set_text( ui_CTSfield, heading_to_steer );
      
@@ -3164,7 +3153,6 @@ void autopilot_main_update_label() //displays updated info in the watch face. Ne
 lv_label_set_text(ui_Togglelabel,"ON");}
 else {
 lv_label_set_text(ui_Togglelabel, "OFF");}
-
 
 }
 
