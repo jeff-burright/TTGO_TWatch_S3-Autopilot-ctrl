@@ -68,7 +68,7 @@ extern const uint8_t boot_music[4365];
 #define WIFI_SCAN_PAGE_ID                       8
 #define MIC_IR_PAGE_ID                          11
 
-#define DEFAULT_SCREEN_TIMEOUT                  15*1000
+#define DEFAULT_SCREEN_TIMEOUT                  10*1000
 #define DEFAULT_COLOR                           (lv_color_make(252, 218, 72))
 #define VAD_FRAME_LENGTH_MS                     30
 #define VAD_BUFFER_LENGTH                       (VAD_FRAME_LENGTH_MS * MIC_I2S_SAMPLE_RATE / 1000)
@@ -646,6 +646,9 @@ void lowPowerEnergyHandler()
     pmuIrq = false;
     lv_timer_pause(transmitTask);
     //TODO: Low power consumption not debugged
+   
+   WiFi.mode(WIFI_OFF);
+
     if (lightSleep) {
         esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
         // esp_sleep_enable_ext1_wakeup(1ULL << BOARD_BMA423_INT1, ESP_EXT1_WAKEUP_ANY_HIGH);
@@ -655,13 +658,12 @@ void lowPowerEnergyHandler()
         gpio_wakeup_enable ((gpio_num_t)BOARD_BMA423_INT1, GPIO_INTR_HIGH_LEVEL);
         esp_sleep_enable_gpio_wakeup ();
         esp_light_sleep_start();
-    } else {
+    } 
+    else {
 
-//experiment
-//esp_wifi_stop();
-WiFi.mode(WIFI_OFF);
 
-        setCpuFrequencyMhz(10);
+
+        setCpuFrequencyMhz(3);   //experiment. was 10
         // setCpuFrequencyMhz(80);
         while (!pmuIrq && !sportsIrq && !watch.getTouched()) {
             delay(300);
@@ -696,8 +698,9 @@ WiFi.mode(WIFI_OFF);
     watch.incrementalBrightness(brightnessLevel);
     
     //experiment
-  // if (pageId ==7) 
-  WiFi.mode(WIFI_STA);
+  // if (pageId == 7) 
+  //WiFi.mode(WIFI_STA);
+  espnowinit();
 
 }
 
@@ -798,8 +801,8 @@ void factory_ui()
     lv_obj_add_event_cb(tileview, tileview_change_cb, LV_EVENT_VALUE_CHANGED, NULL);
 
     lv_obj_t *t1 = lv_tileview_add_tile(tileview, 0, 0, LV_DIR_HOR | LV_DIR_BOTTOM);
-    lv_obj_t *t1_0 = lv_tileview_add_tile(tileview, 0, 1, LV_DIR_TOP | LV_DIR_BOTTOM);
-    lv_obj_t *t1_1 = lv_tileview_add_tile(tileview, 0, 2, LV_DIR_TOP | LV_DIR_BOTTOM);
+    //lv_obj_t *t1_0 = lv_tileview_add_tile(tileview, 0, 1, LV_DIR_TOP | LV_DIR_BOTTOM);
+    //lv_obj_t *t1_1 = lv_tileview_add_tile(tileview, 0, 2, LV_DIR_TOP | LV_DIR_BOTTOM);
 
     lv_obj_t *t2 = lv_tileview_add_tile(tileview, 1, 0, LV_DIR_HOR | LV_DIR_BOTTOM);
    
@@ -808,18 +811,18 @@ void factory_ui()
     lv_obj_set_scrollbar_mode(t2, LV_SCROLLBAR_MODE_OFF);  //experimental for scrolling off
     lv_obj_clear_flag(t2, LV_OBJ_FLAG_SCROLLABLE);
    
-    lv_obj_t *t2_1 = lv_tileview_add_tile(tileview, 1, 1, LV_DIR_TOP | LV_DIR_BOTTOM);
-    lv_obj_t *t2_2 = lv_tileview_add_tile(tileview, 1, 2, LV_DIR_TOP | LV_DIR_BOTTOM);
-    lv_obj_t *t2_3 = lv_tileview_add_tile(tileview, 1, 3, LV_DIR_TOP | LV_DIR_BOTTOM);
+   // lv_obj_t *t2_1 = lv_tileview_add_tile(tileview, 1, 1, LV_DIR_TOP | LV_DIR_BOTTOM);
+    //lv_obj_t *t2_2 = lv_tileview_add_tile(tileview, 1, 2, LV_DIR_TOP | LV_DIR_BOTTOM);
+    //lv_obj_t *t2_3 = lv_tileview_add_tile(tileview, 1, 3, LV_DIR_TOP | LV_DIR_BOTTOM);
 
     lv_obj_t *t3 = lv_tileview_add_tile(tileview, 2, 0, LV_DIR_HOR | LV_DIR_BOTTOM);
-    lv_obj_t *t3_1 = lv_tileview_add_tile(tileview, 2, 1, LV_DIR_TOP | LV_DIR_BOTTOM);
+    //lv_obj_t *t3_1 = lv_tileview_add_tile(tileview, 2, 1, LV_DIR_TOP | LV_DIR_BOTTOM);
 
 
     lv_obj_t *t4 = lv_tileview_add_tile(tileview, 3, 0, LV_DIR_HOR);
     lv_obj_t *t5 = lv_tileview_add_tile(tileview, 4, 0, LV_DIR_HOR);
     lv_obj_t *t6 = lv_tileview_add_tile(tileview, 5, 0, LV_DIR_HOR);
-    lv_obj_t *t7 = lv_tileview_add_tile(tileview, 6, 0, LV_DIR_HOR);
+   // lv_obj_t *t7 = lv_tileview_add_tile(tileview, 6, 0, LV_DIR_HOR);
 
 
     //productPinmap(t1);
@@ -1145,10 +1148,10 @@ lv_obj_clear_flag( clock_bg, LV_OBJ_FLAG_SCROLLABLE );
     lv_obj_add_style(battery_percent2, &label_style, LV_PART_MAIN);
 
 //step counter
-    radstep_counter = lv_label_create(parent);
-    lv_label_set_text(radstep_counter, "%d");
-    lv_obj_align(radstep_counter, LV_ALIGN_BOTTOM_MID, 0, -20);
-    lv_obj_add_style(radstep_counter, &label_style, LV_PART_MAIN);
+ //   radstep_counter = lv_label_create(parent);
+  //  lv_label_set_text(radstep_counter, "%d");
+  //  lv_obj_align(radstep_counter, LV_ALIGN_BOTTOM_MID, 0, -20);
+  //  lv_obj_add_style(radstep_counter, &label_style, LV_PART_MAIN);
 
 //read the time
     clockTimer =   lv_timer_create([](lv_timer_t *timer) {
@@ -1224,7 +1227,7 @@ lv_img_set_angle(
         lv_anim_start(&a);
 
  // Update step counter
-        lv_label_set_text_fmt(radstep_counter, "%d", stepCounter);
+        //lv_label_set_text_fmt(radstep_counter, "%d", stepCounter);
 
     },
     1000, NULL); 
@@ -3142,8 +3145,12 @@ if ( event_code == LV_EVENT_CLICKED) {
 
 void autopilot_main_update_label() //displays updated info in the watch face. Need to gather that data from the pilot via wifi.
 {
+
+//experiment
+ //WiFi.mode(WIFI_STA);
+
   //  snprintf(heading, sizeof( heading ), "%.1f°", incomingHeading);
-    snprintf(heading_to_steer, sizeof( heading_to_steer ), "%0.1f°", incomingHTS);
+    snprintf(heading_to_steer, sizeof( heading_to_steer ), "%0.0f°", incomingHTS);
     //snprintf(incAPstate, sizeof (incAPstate), "%s", APState);     
      // lv_label_set_text_fmt(ui_Togglelabel, "%s", incAPstate);
       lv_label_set_text( ui_CTSfield, heading_to_steer );
@@ -3161,7 +3168,7 @@ lv_label_set_text(ui_Togglelabel, "OFF");}
 void autopilot(lv_obj_t *parent)
 {
 //experiment
-WiFi.mode(WIFI_STA);
+//WiFi.mode(WIFI_STA);
 
 lv_disp_t *dispp = lv_disp_get_default();
 lv_theme_t *theme = lv_theme_default_init(dispp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED), false, LV_FONT_DEFAULT);
