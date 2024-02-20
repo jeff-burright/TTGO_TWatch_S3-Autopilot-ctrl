@@ -16,8 +16,15 @@
  *                  Upload Mode:"UART0/Hardware CDC"
  *                  USB Mode:"Hardware CDC and JTAG"
  */
+
+
 #define ENABLE_PLAYER
-#define ENABLE_IR_SENDER
+//#define ENABLE_IR_SENDER
+
+//#include <esp_int_wdt.h>
+//#include <rtc_wdt.h>
+
+
 #include <Arduino.h>
 #include <LilyGoLib.h>
 #include <LV_Helper.h>
@@ -32,14 +39,6 @@ IRsend irsend(BOARD_IR_PIN);
 #include <math.h>
 #include <cmath>
 
-#ifdef ENABLE_PLAYER
-#include <AudioFileSourcePROGMEM.h>
-#include <AudioFileSourceID3.h>
-#include <AudioGeneratorMP3.h>
-#include <AudioGeneratorWAV.h>
-#include <AudioOutputI2S.h>
-#include <AudioFileSourceSPIFFS.h>
-
 //ESP-NOW//
 #include <esp_now.h>  
 #include <esp_wifi.h> // if hibernating
@@ -50,6 +49,14 @@ IRsend irsend(BOARD_IR_PIN);
 #include "app/autopilot/ui_helpers.h"
 //#include "app/autopilot/ui_events.h"
 
+
+#ifdef ENABLE_PLAYER
+#include <AudioFileSourcePROGMEM.h>
+#include <AudioFileSourceID3.h>
+#include <AudioGeneratorMP3.h>
+#include <AudioGeneratorWAV.h>
+#include <AudioOutputI2S.h>
+#include <AudioFileSourceSPIFFS.h>
 
 AudioGeneratorMP3       *mp3;
 AudioFileSourcePROGMEM  *file;
@@ -69,6 +76,7 @@ extern const uint8_t boot_music[4365];
 #define MIC_IR_PAGE_ID                          11
 
 #define DEFAULT_SCREEN_TIMEOUT                  10*1000
+#define WAIT_SLEEP                              30*1000
 #define DEFAULT_COLOR                           (lv_color_make(252, 218, 72))
 #define VAD_FRAME_LENGTH_MS                     30
 #define VAD_BUFFER_LENGTH                       (VAD_FRAME_LENGTH_MS * MIC_I2S_SAMPLE_RATE / 1000)
@@ -435,17 +443,17 @@ void setup()
 
     watch.begin();
 
-    watch.initMicrophone();
+    //watch.initMicrophone();
 
     settingPMU();
 
     settingSensor();
 
-    settingRadio();
+    // settingRadio();
 
-    settingPlayer();
+    //settingPlayer();
 
-    settingIRRemote();
+   // settingIRRemote();
 
     beginLvglHelper(false);
 
@@ -625,6 +633,7 @@ void SensorHandler()
     }
 }
 
+bool lightsleep2 = false;
 
 void lowPowerEnergyHandler()
 {
@@ -657,27 +666,44 @@ void lowPowerEnergyHandler()
         gpio_wakeup_enable ((gpio_num_t)BOARD_PMU_INT, GPIO_INTR_LOW_LEVEL);
         gpio_wakeup_enable ((gpio_num_t)BOARD_BMA423_INT1, GPIO_INTR_HIGH_LEVEL);
         esp_sleep_enable_gpio_wakeup ();
-        esp_light_sleep_start();
+       
+        //watch.sleep();
+        esp_light_sleep_start(); // experimenting with deep sleep instead
+        //esp_deep_sleep_start(); // CREATES A RESTART LOOP IMMEDIATELY AFTER SLEEP
     } 
     else {
-
-
-
-        setCpuFrequencyMhz(3);   //experiment. was 10
+    Serial.print("screen timeout");
+     
+     //   setCpuFrequencyMhz(10);   //experiment. was 10
         // setCpuFrequencyMhz(80);
-        while (!pmuIrq && !sportsIrq && !watch.getTouched()) {
-            delay(300);
+
+       // while (!pmuIrq && !sportsIrq && !watch.getTouched()) {
+        //    delay(300);
+
             // gpio_wakeup_enable ((gpio_num_t)BOARD_TOUCH_INT, GPIO_INTR_LOW_LEVEL);
             // esp_sleep_enable_timer_wakeup(3 * 1000);
-            // esp_light_sleep_start();
-        }
+        
+
+   bool sleepTimeout = lv_disp_get_inactive_time(NULL) < WAIT_SLEEP;
+    if (sleepTimeout) {
+            while (!pmuIrq && !sportsIrq && !watch.getTouched()) {
+            delay(300);
+
+if (lv_disp_get_inactive_time(NULL) > WAIT_SLEEP){
+   Serial.print("entering delayed light sleep");
+        esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
+        gpio_wakeup_enable ((gpio_num_t)BOARD_PMU_INT, GPIO_INTR_LOW_LEVEL);
+        gpio_wakeup_enable ((gpio_num_t)BOARD_BMA423_INT1, GPIO_INTR_HIGH_LEVEL);
+        esp_sleep_enable_gpio_wakeup ();
+        esp_light_sleep_start();
+}
+            }
 
         //setCpuFrequencyMhz(240);  
-                setCpuFrequencyMhz(80); //experiment
-    }
+     //   setCpuFrequencyMhz(80); //experiment
 
     // Clear Interrupts in Loop
-    // watch.readBMA();
+     //watch.readBMA();  //reactivated as experiment
     // watch.clearPMU();
 
     watch.configreFeatureInterrupt(
@@ -687,7 +713,6 @@ void lowPowerEnergyHandler()
         // SensorBMA423::INT_WAKEUP |      // DoubleTap interrupt
         SensorBMA423::INT_ANY_NO_MOTION,// Any  motion / no motion interrupt
         true);
-
 
     lv_timer_resume(transmitTask);
 
@@ -699,10 +724,24 @@ void lowPowerEnergyHandler()
     
     //experiment
   // if (pageId == 7) 
-  //WiFi.mode(WIFI_STA);
+ // WiFi.mode(WIFI_STA);
   espnowinit();
 
+            }
+            else {
+                 Serial.print("entering delayed light sleep");
+        esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
+        gpio_wakeup_enable ((gpio_num_t)BOARD_PMU_INT, GPIO_INTR_LOW_LEVEL);
+        gpio_wakeup_enable ((gpio_num_t)BOARD_BMA423_INT1, GPIO_INTR_HIGH_LEVEL);
+        esp_sleep_enable_gpio_wakeup ();
+        esp_light_sleep_start();
+        }
+
 }
+}
+
+
+
 
 void loop()
 {
@@ -710,6 +749,7 @@ void loop()
 
     PMUHandler();
 
+/*
     if (recordFlag) {
         recordFlag = false;
         PDM_Record(DEFAULT_RECORD_FILENAME, 8);
@@ -717,11 +757,12 @@ void loop()
         lv_disp_trig_activity(NULL);
     }
 
+    */
+
     bool screenTimeout = lv_disp_get_inactive_time(NULL) < DEFAULT_SCREEN_TIMEOUT;
     if (screenTimeout ||
-            !canScreenOff ||
-            usbPlugIn) {
-        if (!screenTimeout) {
+            !canScreenOff) {
+       /* if (!screenTimeout) {
             if (usbPlugIn &&
                     (pageId != WIFI_SCAN_PAGE_ID &&
                      pageId != RADIO_TRANSMIT_PAGE_ID)
@@ -730,6 +771,7 @@ void loop()
             }
             lv_disp_trig_activity(NULL);
         }
+        */
         lv_task_handler();
         delay(2);
     } else {
@@ -737,6 +779,7 @@ void loop()
     }
 
 }
+
 
 void tileview_change_cb(lv_event_t *e)
 {
@@ -843,10 +886,10 @@ void factory_ui()
     devicesInformation(t1);
    // wifiscan(t3_1);
 
-    radioPingPong(t4);
-    musicPlay(t5);
+   // radioPingPong(t4);
+   // musicPlay(t5);
    // irRemoteVeiw(t6);
-    datetimeVeiw(t6);
+    datetimeVeiw(t4);
 
     transmitTask =  lv_timer_create(radioTask, 200, NULL);
 
@@ -3471,8 +3514,4 @@ void connectbutton(lv_event_t * e)
 {
         callautopilot();
 }
-
-
-
-
 
